@@ -1,0 +1,117 @@
+﻿<Page
+    x:Class="InventoryManagementSystem.WPF.Inventories.InventoryRegisterPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:InventoryManagementSystem.WPF.Inventories"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Title="InventoryRegisterPage"
+    d:DataContext="{d:DesignInstance Type=local:InventoryRegisterViewModel,
+                                     IsDesignTimeCreatable=False}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <StackPanel Margin="30">
+        <ui:SnackbarPresenter />
+        <!--  在庫選択  -->
+        <StackPanel Margin="10" Orientation="Horizontal">
+            <Label
+                Width="100"
+                VerticalAlignment="Center"
+                Content="商品名：" />
+            <ui:TextBox
+                Width="300"
+                Text="{Binding ItemName.Value}"
+                Validation.ErrorTemplate="{StaticResource ValidationTemplate}" />
+        </StackPanel>
+
+        <!--  数量  -->
+        <StackPanel Margin="10" Orientation="Horizontal">
+            <Label
+                Width="100"
+                VerticalAlignment="Center"
+                Content="初期数量：" />
+            <TextBox
+                Width="100"
+                HorizontalContentAlignment="Right"
+                Cursor="IBeam"
+                Text="{Binding Quantity.Value}"
+                Validation.ErrorTemplate="{StaticResource ValidationTemplate}" />
+        </StackPanel>
+
+        <!--  日付  -->
+        <StackPanel
+            Margin="10"
+            Cursor=""
+            Orientation="Horizontal">
+            <Label
+                Width="100"
+                VerticalAlignment="Center"
+                Content="入庫日：" />
+            <DatePicker
+                Width="200"
+                SelectedDate="{Binding TransactionDate.Value}"
+                Validation.ErrorTemplate="{StaticResource ValidationTemplate}" />
+        </StackPanel>
+
+        <!--  保管場所  -->
+        <StackPanel
+            Margin="10"
+            Cursor=""
+            Orientation="Horizontal">
+            <Label
+                Width="100"
+                VerticalAlignment="Center"
+                Content="保管場所：" />
+            <ComboBox
+                Width="200"
+                DisplayMemberPath="Name"
+                ItemsSource="{Binding Locations}"
+                SelectedItem="{Binding SelectedLocation.Value}"
+                Validation.ErrorTemplate="{StaticResource ValidationTemplate}" />
+        </StackPanel>
+
+        <!--  実行ボタン  -->
+        <ui:Button
+            Width="120"
+            Margin="10"
+            HorizontalAlignment="Right"
+            Command="{Binding ExecuteCommand}"
+            Content="在庫登録"
+            Icon="{ui:SymbolIcon Symbol=BoxCheckmark24}" />
+
+        <Separator Margin="10" />
+        <GroupBox Foreground="White" Header="直近に更新された5件の在庫">
+            <DataGrid
+                Height="230"
+                Margin="10"
+                d:ItemsSource="{d:SampleData ItemCount=3}"
+                AutoGenerateColumns="False"
+                IsReadOnly="True"
+                ItemsSource="{Binding RecentInventories}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn
+                        Width="*"
+                        Binding="{Binding ItemName}"
+                        Header="商品名" />
+                    <DataGridTextColumn
+                        Width="Auto"
+                        MinWidth="70"
+                        Binding="{Binding Quantity}"
+                        Header="在庫数" />
+                    <DataGridTextColumn
+                        Width="Auto"
+                        MinWidth="150"
+                        Binding="{Binding LocationName}"
+                        Header="保管場所" />
+                    <DataGridTextColumn
+                        Width="Auto"
+                        MinWidth="150"
+                        Binding="{Binding RegisteredDate, StringFormat='yyyy/MM/dd hh:mm:ss'}"
+                        Header="登録日" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
+    </StackPanel>
+</Page>

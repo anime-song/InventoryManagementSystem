@@ -1,0 +1,25 @@
+﻿<Application
+    x:Class="InventoryManagementSystem.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:InventoryManagementSystem.WPF.Converters"
+    xmlns:local="clr-namespace:InventoryManagementSystem"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ui:ThemesDictionary Theme="Dark" />
+                <ui:ControlsDictionary />
+            </ResourceDictionary.MergedDictionaries>
+
+            <ControlTemplate x:Key="ValidationTemplate">
+                <StackPanel>
+                    <TextBlock Foreground="Red" Text="{Binding AdornedElement.(Validation.Errors)[0].ErrorContent, ElementName=adornedelem}" />
+                    <AdornedElementPlaceholder x:Name="adornedelem" />
+                </StackPanel>
+            </ControlTemplate>
+
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" Collapse="False" />
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
