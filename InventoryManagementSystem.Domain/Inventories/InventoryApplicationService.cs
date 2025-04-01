@@ -96,6 +96,24 @@ namespace InventoryManagementSystem.Domain.Inventories
         }
 
         /// <summary>
+        /// 保管場所を更新します
+        /// </summary>
+        /// <param name="locationId"></param>
+        /// <param name="name"></param>
+        /// <param name="description"></param>
+        public Location UpdateLocation(
+            int locationId, string name, string description)
+        {
+            var location = locationRepository.FindById(locationId)
+                ?? throw new InvalidOperationException($"ID={locationId}の保管場所が存在しません");
+
+            location.Update(name, description);
+
+            locationRepository.Update(location);
+            return location;
+        }
+
+        /// <summary>
         /// 新規在庫を登録します
         /// </summary>
         /// <param name="itemName"></param>
