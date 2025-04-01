@@ -9,8 +9,8 @@ namespace InventoryManagementSystem.Domain.Inventories
     public sealed class Location
     {
         public int? Id { get; }
-        public string Name { get; }
-        public string Description { get; }
+        public string Name { get; private set; }
+        public string Description { get; private set; }
 
         public static Location CreateNew(string name, string description)
         {
@@ -26,6 +26,12 @@ namespace InventoryManagementSystem.Domain.Inventories
                 id: id,
                 name: name,
                 description: description);
+        }
+
+        public void Update(string name, string description)
+        {
+            Name = name;
+            Description = description;
         }
 
         public Location(int? id, string name, string description)
