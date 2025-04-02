@@ -20,11 +20,11 @@ namespace InventoryManagementSystem.Tests
         {
             var mockPurchase = new Mock<IPurchaseRepository>();
             var mockInventoryService = new Mock<IInventoryApplicationService>();
-            var cancelService = new PurchaseCancellationService(mockPurchase.Object, mockInventoryService.Object);
 
             var inventoryId = 100;
+            int quantity = 10;
             var inventory = Inventory.FromPersistence(
-                id: inventoryId, itemName: "商品A", quantity: 10, locationId: 1, registeredDate: DateTime.Now.Date);
+                id: inventoryId, itemName: "商品A", quantity: quantity, locationId: 1, registeredDate: DateTime.Now.Date);
             mockInventoryService.Setup(r => r.Register(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(inventory);
 
@@ -36,26 +36,27 @@ namespace InventoryManagementSystem.Tests
                         id: purchaseId,
                         status: x.Status,
                         inventoryId: x.InventoryId,
-                        purchaseDate: x.PurchaseDate);
+                        purchaseDate: x.PurchaseDate,
+                        quantity: x.Quantity);
                 });
 
             var service = new PurchaseApplicationService(
                 mockPurchase.Object,
-                mockInventoryService.Object,
-                cancelService);
+                mockInventoryService.Object);
 
             service.RegisterPurchase(
                 itemName: "商品A",
                 purchaseDate: DateTime.Today,
-                quantity: 10,
+                quantity: quantity,
                 locationId: 1);
 
             mockInventoryService.Verify(r => r.Register("商品A", 0, 1), Times.Once);
-            mockInventoryService.Verify(r => r.Store(inventoryId, 10, DateTime.Today, TransactionSourceType.Purchase, 200), Times.Once);
+            mockInventoryService.Verify(r => r.Store(inventoryId, quantity, DateTime.Today, TransactionSourceType.Purchase, 200), Times.Once);
             mockPurchase.Verify(r => r.Add(It.Is<Purchase>(
                 x => x.InventoryId == inventoryId &&
                 x.Status == PurchaseStatus.Normal &&
-                x.PurchaseDate == DateTime.Today
+                x.PurchaseDate == DateTime.Today &&
+                x.Quantity == quantity
                 )),
                 Times.Once);
         }
@@ -65,16 +66,16 @@ namespace InventoryManagementSystem.Tests
         {
             var mockPurchase = new Mock<IPurchaseRepository>();
             var mockInventoryService = new Mock<IInventoryApplicationService>();
-            var cancelService = new PurchaseCancellationService(mockPurchase.Object, mockInventoryService.Object);
 
             var inventoryId = 100;
             var purchaseId = 200;
+            int quantity = 10;
 
             var transaction = InventoryTransaction.FromPersistence(
                 id: 1,
                 transactionType: TransactionType.In,
                 transactionDate: DateTime.Now.Date,
-                quantity: 10,
+                quantity: quantity,
                 inventoryId: inventoryId,
                 canceledTransactionId: null,
                 sourceType: TransactionSourceType.Purchase,
@@ -86,14 +87,14 @@ namespace InventoryManagementSystem.Tests
                         id: purchaseId,
                         status: PurchaseStatus.Normal,
                         inventoryId: inventoryId,
-                        purchaseDate: DateTime.Now.Date);
+                        purchaseDate: DateTime.Now.Date,
+                        quantity: quantity);
             mockPurchase.Setup(r => r.FindById(It.Is<int>(x => x == purchaseId)))
                 .Returns(purchase);
 
             var service = new PurchaseApplicationService(
                 mockPurchase.Object,
-                mockInventoryService.Object,
-                cancelService);
+                mockInventoryService.Object);
 
             service.CancelPurchase(purchaseId);
 
@@ -106,7 +107,6 @@ namespace InventoryManagementSystem.Tests
         {
             var mockPurchase = new Mock<IPurchaseRepository>();
             var mockInventoryService = new Mock<IInventoryApplicationService>();
-            var cancelService = new PurchaseCancellationService(mockPurchase.Object, mockInventoryService.Object);
 
             var inventoryId = 100;
             var purchaseId = 200;
@@ -125,8 +125,7 @@ namespace InventoryManagementSystem.Tests
 
             var service = new PurchaseApplicationService(
                 mockPurchase.Object,
-                mockInventoryService.Object,
-                cancelService);
+                mockInventoryService.Object);
 
             Assert.Throws<InvalidOperationException>(() =>
             {
@@ -139,16 +138,16 @@ namespace InventoryManagementSystem.Tests
         {
             var mockPurchase = new Mock<IPurchaseRepository>();
             var mockInventoryService = new Mock<IInventoryApplicationService>();
-            var cancelService = new PurchaseCancellationService(mockPurchase.Object, mockInventoryService.Object);
 
             var inventoryId = 100;
             var purchaseId = 200;
+            int quantity = 10;
 
             var transaction = InventoryTransaction.FromPersistence(
                 id: 1,
                 transactionType: TransactionType.In,
                 transactionDate: DateTime.Now.Date,
-                quantity: 10,
+                quantity: quantity,
                 inventoryId: inventoryId,
                 canceledTransactionId: null,
                 sourceType: TransactionSourceType.Manual,
@@ -160,14 +159,14 @@ namespace InventoryManagementSystem.Tests
                         id: purchaseId,
                         status: PurchaseStatus.Normal,
                         inventoryId: inventoryId,
-                        purchaseDate: DateTime.Now.Date);
+                        purchaseDate: DateTime.Now.Date,
+                        quantity: quantity);
             mockPurchase.Setup(r => r.FindById(It.Is<int>(x => x == purchaseId)))
                 .Returns(purchase);
 
             var service = new PurchaseApplicationService(
                 mockPurchase.Object,
-                mockInventoryService.Object,
-                cancelService);
+                mockInventoryService.Object);
 
             Assert.Throws<InvalidOperationException>(() =>
             {

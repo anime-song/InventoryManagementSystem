@@ -50,7 +50,8 @@ namespace InventoryManagementSystem.Infra.Purchases
                 id: entity.Id,
                 status: new PurchaseStatus(entity.Status),
                 inventoryId: entity.InventoryId,
-                purchaseDate: entity.PurchaseDate);
+                purchaseDate: entity.PurchaseDate,
+                quantity: entity.Quantity);
         }
 
         public static PurchaseEntity ToEntity(Purchase purchase)
@@ -61,6 +62,7 @@ namespace InventoryManagementSystem.Infra.Purchases
                 Status = purchase.Status.Value,
                 InventoryId = purchase.InventoryId,
                 PurchaseDate = purchase.PurchaseDate,
+                Quantity = purchase.Quantity
             };
         }
     }

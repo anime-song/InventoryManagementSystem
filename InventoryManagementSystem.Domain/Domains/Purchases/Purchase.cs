@@ -24,42 +24,49 @@ namespace InventoryManagementSystem.Domain.Domains.Purchases
         public int? Id { get; }
         public PurchaseStatus Status { get; private set; }
         public int InventoryId { get; }
+        public int Quantity { get; }
         public DateTime PurchaseDate { get; }
 
         public static Purchase CreateNew(
             int inventoryId,
-            DateTime purchaseDate)
+            DateTime purchaseDate,
+            int quantity)
         {
             return new Purchase(
                 id: null,
                 status: PurchaseStatus.Normal,
                 inventoryId: inventoryId,
-                purchaseDate: purchaseDate);
+                purchaseDate: purchaseDate,
+                quantity: quantity);
         }
 
         public static Purchase FromPersistence(
             int id,
             PurchaseStatus status,
             int inventoryId,
-            DateTime purchaseDate)
+            DateTime purchaseDate,
+            int quantity)
         {
             return new Purchase(
                 id: id,
                 status: status,
                 inventoryId: inventoryId,
-                purchaseDate: purchaseDate);
+                purchaseDate: purchaseDate,
+                quantity: quantity);
         }
 
         public Purchase(
             int? id,
             PurchaseStatus status,
             int inventoryId,
-            DateTime purchaseDate)
+            DateTime purchaseDate,
+            int quantity)
         {
             Id = id;
             Status = status;
             InventoryId = inventoryId;
             PurchaseDate = purchaseDate;
+            Quantity = quantity;
         }
 
         public void Cancel()

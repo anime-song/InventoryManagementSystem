@@ -15,5 +15,6 @@ namespace InventoryManagementSystem.Infra.Purchases
         public int Status { get; set; }
         public int InventoryId { get; set; }
         public DateTime PurchaseDate { get; set; }
+        public int Quantity { get; set; }
     }
 }

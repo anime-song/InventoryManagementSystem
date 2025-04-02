@@ -31,12 +31,11 @@ namespace InventoryManagementSystem.Domain.Applications.Purchases
 
         public PurchaseApplicationService(
             IPurchaseRepository purchaseRepository,
-            IInventoryApplicationService inventoryApplicationService,
-            PurchaseCancellationService purchaseCancellationService)
+            IInventoryApplicationService inventoryApplicationService)
         {
             this.purchaseRepository = purchaseRepository;
             this.inventoryApplicationService = inventoryApplicationService;
-            this.purchaseCancellationService = purchaseCancellationService;
+            this.purchaseCancellationService = new PurchaseCancellationService(purchaseRepository, inventoryApplicationService);
         }
 
         public IEnumerable<Purchase> FindAll()
@@ -67,7 +66,8 @@ namespace InventoryManagementSystem.Domain.Applications.Purchases
             // 仕入
             var purchase = Purchase.CreateNew(
                 inventoryId: registeredInventory.Id!.Value,
-                purchaseDate: purchaseDate);
+                purchaseDate: purchaseDate,
+                quantity: quantity);
             purchase = purchaseRepository.Add(purchase);
 
             // 入庫
