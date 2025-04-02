@@ -3,7 +3,7 @@ using Moq;
 
 namespace InventoryManagementSystem.Tests
 {
-    public class InventoryApplicationServiceTests
+    public sealed class InventoryApplicationServiceTests
     {
         [Fact(DisplayName = "ê≥ÇµÇ≠ç›å…ìoò^Ç≥ÇÍÇÈ")]
         public void Register_ShouldRegisterInventory()
@@ -30,7 +30,8 @@ namespace InventoryManagementSystem.Tests
             mockInventoryRepo.Setup(r => r.FindById(1)).Returns(inventory);
             var service = new InventoryApplicationService(mockInventoryRepo.Object, mockTransactionRepo.Object, mockLocationRepo.Object);
 
-            service.Store(inventoryId: 1, quantity: 4, storeDate: DateTime.Today);
+            service.Store(
+                inventoryId: 1, quantity: 4, storeDate: DateTime.Today, sourceType: TransactionSourceType.Manual, sourceId: null);
 
             mockInventoryRepo.Verify(r => r.Update(It.Is<Inventory>(i => i.Quantity == 9)), Times.Once);
             mockTransactionRepo.Verify(r => r.Add(It.IsAny<InventoryTransaction>()), Times.Once);
@@ -47,7 +48,8 @@ namespace InventoryManagementSystem.Tests
             mockInventoryRepo.Setup(r => r.FindById(1)).Returns(inventory);
             var service = new InventoryApplicationService(mockInventoryRepo.Object, mockTransactionRepo.Object, mockLocationRepo.Object);
 
-            service.Withdraw(inventoryId: 1, quantity: 3, withdrawDate: DateTime.Today);
+            service.Withdraw(
+                inventoryId: 1, quantity: 3, withdrawDate: DateTime.Today, sourceType: TransactionSourceType.Manual, sourceId: null);
 
             mockInventoryRepo.Verify(r => r.Update(It.Is<Inventory>(i => i.Quantity == 2)), Times.Once);
             mockTransactionRepo.Verify(r => r.Add(It.IsAny<InventoryTransaction>()), Times.Once);
@@ -66,7 +68,8 @@ namespace InventoryManagementSystem.Tests
             mockInventoryRepo.Setup(r => r.FindById(1)).Returns(inventory);
             var service = new InventoryApplicationService(mockInventoryRepo.Object, mockTransactionRepo.Object, mockLocationRepo.Object);
 
-            service.Withdraw(inventoryId: 1, quantity: withdrawQuantity, withdrawDate: DateTime.Today);
+            service.Withdraw(
+                inventoryId: 1, quantity: withdrawQuantity, withdrawDate: DateTime.Today, sourceType: TransactionSourceType.Manual, sourceId: null);
 
             mockInventoryRepo.Verify(r => r.Update(It.Is<Inventory>(i => i.Quantity == expectedRemaining)), Times.Once);
             mockTransactionRepo.Verify(r => r.Add(It.IsAny<InventoryTransaction>()), Times.Once);
@@ -89,7 +92,9 @@ namespace InventoryManagementSystem.Tests
                 transactionDate: DateTime.Today,
                 quantity: 3,
                 inventoryId: 1,
-                canceledTransactionId: null);
+                canceledTransactionId: null,
+                sourceType: TransactionSourceType.Manual,
+                sourceId: null);
             var mockInventoryRepo = new Mock<IInventoryRepository>();
             var mockTransactionRepo = new Mock<IInventoryTransactionRepository>();
             var mockLocationRepo = new Mock<ILocationRepository>();
@@ -98,7 +103,7 @@ namespace InventoryManagementSystem.Tests
             mockTransactionRepo.Setup(r => r.FindById(1)).Returns(inventoryTransaction);
             var service = new InventoryApplicationService(mockInventoryRepo.Object, mockTransactionRepo.Object, mockLocationRepo.Object);
 
-            service.CancelTransaction(inventoryTransactionId: 1);
+            service.CancelTransaction(inventoryTransactionId: 1, sourceType: TransactionSourceType.Manual, sourceId: null);
 
             mockInventoryRepo.Verify(r => r.Update(It.Is<Inventory>(i => i.Quantity == expectedRemaining)), Times.Once);
             mockTransactionRepo.Verify(r => r.Add(It.Is<InventoryTransaction>(
@@ -115,7 +120,9 @@ namespace InventoryManagementSystem.Tests
                 transactionDate: DateTime.Today,
                 quantity: 3,
                 inventoryId: 1,
-                canceledTransactionId: null);
+                canceledTransactionId: null,
+                sourceType: TransactionSourceType.Manual,
+                sourceId: null);
             var mockInventoryRepo = new Mock<IInventoryRepository>();
             var mockTransactionRepo = new Mock<IInventoryTransactionRepository>();
             var mockLocationRepo = new Mock<ILocationRepository>();
@@ -126,7 +133,7 @@ namespace InventoryManagementSystem.Tests
 
             Assert.Throws<InvalidOperationException>(() =>
             {
-                service.CancelTransaction(inventoryTransactionId: 1);
+                service.CancelTransaction(inventoryTransactionId: 1, sourceType: TransactionSourceType.Manual, sourceId: null);
             });
         }
 
@@ -144,7 +151,7 @@ namespace InventoryManagementSystem.Tests
 
             Assert.Throws<InvalidOperationException>(() =>
             {
-                service.CancelTransaction(inventoryTransactionId: 1);
+                service.CancelTransaction(inventoryTransactionId: 1, sourceType: TransactionSourceType.Manual, sourceId: null);
             });
         }
 
@@ -158,7 +165,9 @@ namespace InventoryManagementSystem.Tests
                 transactionDate: DateTime.Today,
                 quantity: 6,
                 inventoryId: 1,
-                canceledTransactionId: null);
+                canceledTransactionId: null,
+                sourceType: TransactionSourceType.Manual,
+                sourceId: null);
             var mockInventoryRepo = new Mock<IInventoryRepository>();
             var mockTransactionRepo = new Mock<IInventoryTransactionRepository>();
             var mockLocationRepo = new Mock<ILocationRepository>();
@@ -169,7 +178,7 @@ namespace InventoryManagementSystem.Tests
 
             Assert.Throws<InvalidOperationException>(() =>
             {
-                service.CancelTransaction(inventoryTransactionId: 1);
+                service.CancelTransaction(inventoryTransactionId: 1, sourceType: TransactionSourceType.Manual, sourceId: null);
             });
         }
 
@@ -184,7 +193,8 @@ namespace InventoryManagementSystem.Tests
             var service = new InventoryApplicationService(mockInventoryRepo.Object, mockTransactionRepo.Object, mockLocationRepo.Object);
 
             Assert.Throws<InvalidOperationException>(
-                () => service.Withdraw(inventoryId: 1, quantity: 3, withdrawDate: DateTime.Today));
+                () => service.Withdraw(
+                    inventoryId: 1, quantity: 3, withdrawDate: DateTime.Today, sourceType: TransactionSourceType.Manual, sourceId: null));
         }
 
         [Fact(DisplayName = "ç›å…Ç™ë∂ç›Çµèoå…êîó Ç™ç›å…êîó ÇÊÇËëΩÇ¢èÍçáó·äOÇìäÇ∞ÇÈ")]
@@ -199,7 +209,8 @@ namespace InventoryManagementSystem.Tests
             var service = new InventoryApplicationService(mockInventoryRepo.Object, mockTransactionRepo.Object, mockLocationRepo.Object);
 
             Assert.Throws<InvalidOperationException>(
-                () => service.Withdraw(inventoryId: 1, quantity: 6, withdrawDate: DateTime.Today));
+                () => service.Withdraw(
+                    inventoryId: 1, quantity: 6, withdrawDate: DateTime.Today, sourceType: TransactionSourceType.Manual, sourceId: null));
         }
     }
 }

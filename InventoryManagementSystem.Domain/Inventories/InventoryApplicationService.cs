@@ -10,7 +10,49 @@ using System.Threading.Tasks;
 
 namespace InventoryManagementSystem.Domain.Inventories
 {
-    public sealed class InventoryApplicationService
+    public interface IInventoryApplicationService
+    {
+        IEnumerable<Inventory> Find(string keyword);
+
+        IEnumerable<InventoryTransaction> FindTransaction(FindTransactionRequest request);
+
+        PageResult<InventoryTransaction> FindTransactionWithPagenate(
+            FindTransactionRequest transactionRequest,
+            int page,
+            int fetchCount);
+
+        IEnumerable<Inventory> GetLatest(int fetchCount);
+
+        IEnumerable<Location> FindAllLocation();
+
+        Location RegisterLocation(string name, string description);
+
+        Location UpdateLocation(
+            int locationId, string name, string description);
+
+        Inventory Register(string itemName, int quantity, int locationId);
+
+        void Store(
+            int inventoryId,
+            int quantity,
+            DateTime storeDate,
+            TransactionSourceType sourceType,
+            int? sourceId);
+
+        void Withdraw(
+            int inventoryId,
+            int quantity,
+            DateTime withdrawDate,
+            TransactionSourceType sourceType,
+            int? sourceId);
+
+        void CancelTransaction(
+            int inventoryTransactionId,
+            TransactionSourceType sourceType,
+            int? sourceId);
+    }
+
+    public sealed class InventoryApplicationService : IInventoryApplicationService
     {
         private readonly IInventoryRepository inventoryRepository;
         private readonly IInventoryTransactionRepository inventoryTransactionRepository;
@@ -144,7 +186,9 @@ namespace InventoryManagementSystem.Domain.Inventories
         public void Store(
             int inventoryId,
             int quantity,
-            DateTime storeDate)
+            DateTime storeDate,
+            TransactionSourceType sourceType,
+            int? sourceId)
         {
             // 入庫処理
             var inventory = inventoryRepository.FindById(inventoryId)
@@ -157,7 +201,9 @@ namespace InventoryManagementSystem.Domain.Inventories
                 transactionType: TransactionType.In,
                 transactionDate: storeDate,
                 quantity: quantity,
-                inventoryId: inventory.Id!.Value);
+                inventoryId: inventory.Id!.Value,
+                sourceType: sourceType,
+                sourceId: sourceId);
             inventoryTransactionRepository.Add(transaction);
         }
 
@@ -171,7 +217,9 @@ namespace InventoryManagementSystem.Domain.Inventories
         public void Withdraw(
             int inventoryId,
             int quantity,
-            DateTime withdrawDate)
+            DateTime withdrawDate,
+            TransactionSourceType sourceType,
+            int? sourceId)
         {
             // 出庫処理
             var inventory = inventoryRepository.FindById(inventoryId)
@@ -184,7 +232,9 @@ namespace InventoryManagementSystem.Domain.Inventories
                 transactionType: TransactionType.Out,
                 transactionDate: withdrawDate,
                 quantity: quantity,
-                inventoryId: inventory.Id!.Value);
+                inventoryId: inventory.Id!.Value,
+                sourceType: sourceType,
+                sourceId: sourceId);
             inventoryTransactionRepository.Add(transaction);
         }
 
@@ -195,7 +245,9 @@ namespace InventoryManagementSystem.Domain.Inventories
         /// <exception cref="InvalidOperationException"></exception>
         /// <exception cref="ArgumentException"></exception>
         public void CancelTransaction(
-            int inventoryTransactionId)
+            int inventoryTransactionId,
+            TransactionSourceType sourceType,
+            int? sourceId)
         {
             var transaction = inventoryTransactionRepository.FindById(inventoryTransactionId)
                 ?? throw new InvalidOperationException("指定された在庫トランザクションが存在しません");
@@ -209,7 +261,9 @@ namespace InventoryManagementSystem.Domain.Inventories
             // キャンセルトランザクションの登録
             var cancelTransaction = InventoryTransaction.CreateCancelTransaction(
                 originalTransaction: transaction,
-                cancelDate: DateTime.Now.Date);
+                cancelDate: DateTime.Now.Date,
+                sourceType: sourceType,
+                sourceId: sourceId);
             inventoryTransactionRepository.Add(cancelTransaction);
         }
     }

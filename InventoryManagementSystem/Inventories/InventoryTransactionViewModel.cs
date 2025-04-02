@@ -19,10 +19,10 @@ namespace InventoryManagementSystem.WPF.Inventories
         public InventoryTransactionSearchViewModel InventoryTransactionSearchViewModel { get; } = new InventoryTransactionSearchViewModel();
         public PaginationControlViewModel PaginationControlViewModel { get; } = new PaginationControlViewModel();
 
-        private readonly InventoryApplicationService inventoryApplicationService;
+        private readonly IInventoryApplicationService inventoryApplicationService;
 
         public InventoryTransactionViewModel(
-            InventoryApplicationService inventoryApplicationService,
+            IInventoryApplicationService inventoryApplicationService,
             ISnackbarService snackbarService) : base(snackbarService)
         {
             this.inventoryApplicationService = inventoryApplicationService;

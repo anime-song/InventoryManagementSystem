@@ -15,11 +15,11 @@ namespace InventoryManagementSystem.WPF.Inventories
 {
     public partial class LocationRegisterViewModel : ViewModel
     {
-        private readonly InventoryApplicationService inventoryApplicationService;
+        private readonly IInventoryApplicationService inventoryApplicationService;
         private readonly ISnackbarService snackbarService;
 
         public LocationRegisterViewModel(
-            InventoryApplicationService inventoryApplicationService,
+            IInventoryApplicationService inventoryApplicationService,
             ISnackbarService snackbarService) : base(snackbarService)
         {
             this.inventoryApplicationService = inventoryApplicationService;

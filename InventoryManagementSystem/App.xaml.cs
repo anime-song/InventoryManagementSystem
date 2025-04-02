@@ -30,7 +30,7 @@ namespace InventoryManagementSystem
             services.AddSingleton<IInventoryRepository, InventoryRepository>();
             services.AddSingleton<IInventoryTransactionRepository, InventoryTransactionRepository>();
             services.AddSingleton<ILocationRepository, LocationRepository>();
-            services.AddSingleton<InventoryApplicationService>();
+            services.AddSingleton<IInventoryApplicationService, InventoryApplicationService>();
 
             services.AddTransient<InventoryViewModel>();
             services.AddTransient<InventoryPage>();

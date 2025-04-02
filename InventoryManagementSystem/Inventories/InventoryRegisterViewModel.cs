@@ -18,11 +18,11 @@ namespace InventoryManagementSystem.WPF.Inventories
 {
     public partial class InventoryRegisterViewModel : ViewModel
     {
-        private readonly InventoryApplicationService inventoryApplicationService;
+        private readonly IInventoryApplicationService inventoryApplicationService;
         private readonly ISnackbarService snackbarService;
 
         public InventoryRegisterViewModel(
-            InventoryApplicationService inventoryApplicationService,
+            IInventoryApplicationService inventoryApplicationService,
             ISnackbarService snackbarService) : base(snackbarService)
         {
             this.inventoryApplicationService = inventoryApplicationService;
@@ -77,7 +77,9 @@ namespace InventoryManagementSystem.WPF.Inventories
                 inventoryApplicationService.Store(
                     inventoryId: registeredInventory.Id!.Value,
                     quantity: Quantity.Value!.Value,
-                    storeDate: TransactionDate.Value!.Value);
+                    storeDate: TransactionDate.Value!.Value,
+                    sourceType: TransactionSourceType.Manual,
+                    sourceId: null);
 
                 snackbarService.Show(
                     "登録完了",

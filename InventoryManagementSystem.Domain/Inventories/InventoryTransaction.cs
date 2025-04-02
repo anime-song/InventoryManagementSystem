@@ -36,6 +36,19 @@
         }
     }
 
+    public sealed record TransactionSourceType
+    {
+        public static readonly TransactionSourceType Purchase = new TransactionSourceType(0);
+        public static readonly TransactionSourceType Sales = new TransactionSourceType(1);
+        public static readonly TransactionSourceType Manual = new TransactionSourceType(2);
+
+        public int Value { get; }
+        public TransactionSourceType(int value)
+        {
+            Value = value;
+        }
+    }
+
     public sealed class InventoryTransaction
     {
         public int? Id { get; }
@@ -43,14 +56,18 @@
         public DateTime TransactionDate { get; }
         public int Quantity { get; }
         public int InventoryId { get; }
-
         public int? CanceledTransactionId { get; }
+
+        public TransactionSourceType TransactionSourceType { get; }
+        public int? SourceId { get; }
 
         public static InventoryTransaction CreateNew(
             TransactionType transactionType,
             DateTime transactionDate,
             int quantity,
-            int inventoryId)
+            int inventoryId,
+            TransactionSourceType sourceType,
+            int? sourceId)
         {
             return new InventoryTransaction(
                 id: null,
@@ -58,7 +75,30 @@
                 transactionDate: transactionDate,
                 quantity: quantity,
                 inventoryId: inventoryId,
-                canceledTransactionId: null);
+                canceledTransactionId: null,
+                sourceType: sourceType,
+                sourceId: sourceId);
+        }
+
+        public static InventoryTransaction FromPersistence(
+            int id,
+            TransactionType transactionType,
+            DateTime transactionDate,
+            int quantity,
+            int inventoryId,
+            int? canceledTransactionId,
+            TransactionSourceType sourceType,
+            int? sourceId)
+        {
+            return new InventoryTransaction(
+                id: id,
+                transactionType: transactionType,
+                transactionDate: transactionDate,
+                quantity: quantity,
+                inventoryId: inventoryId,
+                canceledTransactionId: canceledTransactionId,
+                sourceType: sourceType,
+                sourceId: sourceId);
         }
 
         /// <summary>
@@ -70,7 +110,9 @@
         /// <exception cref="InvalidOperationException"></exception>
         public static InventoryTransaction CreateCancelTransaction(
             InventoryTransaction originalTransaction,
-            DateTime cancelDate)
+            DateTime cancelDate,
+            TransactionSourceType sourceType,
+            int? sourceId)
         {
             if (originalTransaction.TransactionType == TransactionType.Cancel)
             {
@@ -87,24 +129,9 @@
                 transactionDate: cancelDate,
                 quantity: -originalTransaction.Quantity,
                 inventoryId: originalTransaction.InventoryId,
-                canceledTransactionId: originalTransaction.Id);
-        }
-
-        public static InventoryTransaction FromPersistence(
-            int id,
-            TransactionType transactionType,
-            DateTime transactionDate,
-            int quantity,
-            int inventoryId,
-            int? canceledTransactionId)
-        {
-            return new InventoryTransaction(
-                id: id,
-                transactionType: transactionType,
-                transactionDate: transactionDate,
-                quantity: quantity,
-                inventoryId: inventoryId,
-                canceledTransactionId: canceledTransactionId);
+                canceledTransactionId: originalTransaction.Id,
+                sourceType: sourceType,
+                sourceId: sourceId);
         }
 
         public InventoryTransaction(
@@ -113,7 +140,9 @@
             DateTime transactionDate,
             int quantity,
             int inventoryId,
-            int? canceledTransactionId)
+            int? canceledTransactionId,
+            TransactionSourceType sourceType,
+            int? sourceId)
         {
             Id = id;
             TransactionType = transactionType;
@@ -121,6 +150,8 @@
             Quantity = quantity;
             InventoryId = inventoryId;
             CanceledTransactionId = canceledTransactionId;
+            TransactionSourceType = sourceType;
+            SourceId = sourceId;
         }
     }
 }

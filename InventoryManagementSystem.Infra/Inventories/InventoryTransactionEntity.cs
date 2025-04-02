@@ -16,7 +16,9 @@ namespace InventoryManagementSystem.Infra.Inventories
         public DateTime TransactionDate { get; set; }
         public int Quantity { get; set; }
         public int InventoryId { get; set; }
-
         public int? CanceledTransactionId { get; set; }
+
+        public int SourceType { get; set; }
+        public int? SourceId { get; set; }
     }
 }

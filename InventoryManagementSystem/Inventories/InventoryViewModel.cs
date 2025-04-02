@@ -17,12 +17,12 @@ namespace InventoryManagementSystem.WPF.Inventories
 {
     public partial class InventoryViewModel : ViewModel
     {
-        private readonly InventoryApplicationService inventoryApplicationService;
+        private readonly IInventoryApplicationService inventoryApplicationService;
         private readonly INavigationService navigation;
         private readonly IServiceProvider serviceProvider;
 
         public InventoryViewModel(
-            InventoryApplicationService inventoryApplicationService,
+            IInventoryApplicationService inventoryApplicationService,
             INavigationService navigationService,
             IServiceProvider serviceProvider,
             ISnackbarService snackbarService) : base(snackbarService)
