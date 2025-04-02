@@ -13,6 +13,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Helpers\**" />
+    <EmbeddedResource Remove="Helpers\**" />
+    <None Remove="Helpers\**" />
+    <Page Remove="Helpers\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
     <PackageReference Include="ReactiveProperty" Version="9.7.0" />
@@ -24,10 +31,6 @@
   <ItemGroup>
     <ProjectReference Include="..\InventoryManagementSystem.Domain\InventoryManagementSystem.Domain.csproj" />
     <ProjectReference Include="..\InventoryManagementSystem.Infra\InventoryManagementSystem.Infra.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Helpers\" />
   </ItemGroup>
 
 </Project>

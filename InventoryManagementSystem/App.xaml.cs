@@ -1,4 +1,5 @@
 ﻿using InventoryManagementSystem.Domain.Inventories;
+using InventoryManagementSystem.Domain.Purchases;
 using InventoryManagementSystem.Infra.Inventories;
 using InventoryManagementSystem.WPF.Inventories;
 using LiteDB;
@@ -31,6 +32,7 @@ namespace InventoryManagementSystem
             services.AddSingleton<IInventoryTransactionRepository, InventoryTransactionRepository>();
             services.AddSingleton<ILocationRepository, LocationRepository>();
             services.AddSingleton<IInventoryApplicationService, InventoryApplicationService>();
+            services.AddSingleton<IPurchaseApplicationService, PurchaseApplicationService>();
 
             services.AddTransient<InventoryViewModel>();
             services.AddTransient<InventoryPage>();
