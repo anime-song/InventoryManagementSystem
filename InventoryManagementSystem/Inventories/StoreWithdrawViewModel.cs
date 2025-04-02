@@ -1,4 +1,5 @@
-﻿using InventoryManagementSystem.Domain.Inventories;
+﻿using InventoryManagementSystem.Domain.Applications.Inventories;
+using InventoryManagementSystem.Domain.Domains.Inventories;
 using InventoryManagementSystem.WPF.ViewModels;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -14,11 +15,11 @@ namespace InventoryManagementSystem.WPF.Inventories
 {
     public sealed class StoreWithdrawViewModel : ViewModel
     {
-        private readonly InventoryApplicationService inventoryApplicationService;
+        private readonly IInventoryApplicationService inventoryApplicationService;
         private readonly ISnackbarService snackbarService;
 
         public StoreWithdrawViewModel(
-            InventoryApplicationService inventoryApplicationService,
+            IInventoryApplicationService inventoryApplicationService,
             ISnackbarService snackbarService) : base(snackbarService)
         {
             this.snackbarService = snackbarService;
@@ -72,14 +73,18 @@ namespace InventoryManagementSystem.WPF.Inventories
                     inventoryApplicationService.Store(
                         inventoryId: InventoryId!.Value!.Value,
                         quantity: Quantity.Value!.Value,
-                        storeDate: TransactionDate.Value!.Value);
+                        storeDate: TransactionDate.Value!.Value,
+                        sourceType: TransactionSourceType.Manual,
+                        sourceId: null);
                 }
                 else if (SelectedTransactionType.Value == TransactionType.Out)
                 {
                     inventoryApplicationService.Withdraw(
                         inventoryId: InventoryId.Value!.Value,
                         quantity: Quantity.Value!.Value,
-                        withdrawDate: TransactionDate.Value!.Value);
+                        withdrawDate: TransactionDate.Value!.Value,
+                        sourceType: TransactionSourceType.Manual,
+                        sourceId: null);
                 }
 
                 snackbarService.Show(

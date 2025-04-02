@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace InventoryManagementSystem.Domain.Inventories
+namespace InventoryManagementSystem.Domain.Domains.Inventories
 {
     public interface IInventoryRepository
     {

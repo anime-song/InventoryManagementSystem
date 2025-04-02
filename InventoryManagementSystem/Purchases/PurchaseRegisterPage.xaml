@@ -1,20 +1,21 @@
 ﻿<Page
-    x:Class="InventoryManagementSystem.WPF.Inventories.InventoryRegisterPage"
+    x:Class="InventoryManagementSystem.WPF.Purchases.PurchaseRegisterPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:InventoryManagementSystem.WPF.Inventories"
+    xmlns:local="clr-namespace:InventoryManagementSystem.WPF.Purchases"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:purchases="clr-namespace:InventoryManagementSystem.Domain.Domains.Purchases;assembly=InventoryManagementSystem.Domain"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    Title="InventoryRegisterPage"
-    d:DataContext="{d:DesignInstance Type=local:InventoryRegisterViewModel,
+    Title="PurchaseRegisterPage"
+    d:DataContext="{d:DesignInstance Type=local:PurchaseRegisterViewModel,
                                      IsDesignTimeCreatable=False}"
-    d:DesignHeight="450"
+    d:DesignHeight="600"
     d:DesignWidth="800"
     mc:Ignorable="d">
     <StackPanel Margin="30">
         <ui:SnackbarPresenter />
-        <!--  在庫選択  -->
+        <!--  仕入登録  -->
         <StackPanel Margin="10" Orientation="Horizontal">
             <Label
                 Width="100"
@@ -31,7 +32,7 @@
             <Label
                 Width="100"
                 VerticalAlignment="Center"
-                Content="初期数量：" />
+                Content="数量：" />
             <TextBox
                 Width="100"
                 HorizontalContentAlignment="Right"
@@ -48,10 +49,10 @@
             <Label
                 Width="100"
                 VerticalAlignment="Center"
-                Content="入庫日：" />
+                Content="仕入日：" />
             <DatePicker
                 Width="200"
-                SelectedDate="{Binding TransactionDate.Value}"
+                SelectedDate="{Binding PurchaseDate.Value}"
                 Validation.ErrorTemplate="{StaticResource ValidationTemplate}" />
         </StackPanel>
 
@@ -78,18 +79,27 @@
             Margin="10"
             HorizontalAlignment="Right"
             Command="{Binding ExecuteCommand}"
-            Content="在庫登録"
+            Content="仕入登録"
             Icon="{ui:SymbolIcon Symbol=BoxCheckmark24}" />
 
         <Separator Margin="10" />
-        <GroupBox Foreground="White" Header="直近に更新された5件の在庫">
+        <GroupBox Foreground="White" Header="直近5件の仕入">
             <DataGrid
                 Height="230"
                 Margin="10"
                 d:ItemsSource="{d:SampleData ItemCount=3}"
                 AutoGenerateColumns="False"
                 IsReadOnly="True"
-                ItemsSource="{Binding RecentInventories}">
+                ItemsSource="{Binding RecentPurchases}">
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding PurchaseStatus}" Value="{x:Static purchases:PurchaseStatus.Cancelled}">
+                                <Setter Property="Foreground" Value="Gray" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
                 <DataGrid.Columns>
                     <DataGridTextColumn
                         Width="*"
@@ -97,9 +107,9 @@
                         Header="商品名" />
                     <DataGridTextColumn
                         Width="Auto"
-                        MinWidth="70"
-                        Binding="{Binding Quantity}"
-                        Header="在庫数" />
+                        MinWidth="80"
+                        Binding="{Binding PurchaseQuatnity}"
+                        Header="仕入数量" />
                     <DataGridTextColumn
                         Width="Auto"
                         MinWidth="150"
@@ -108,8 +118,32 @@
                     <DataGridTextColumn
                         Width="Auto"
                         MinWidth="150"
-                        Binding="{Binding RegisteredDate, StringFormat='yyyy/MM/dd hh:mm:ss'}"
-                        Header="登録日" />
+                        Binding="{Binding PurchaseDate, StringFormat='yyyy/MM/dd'}"
+                        Header="仕入日" />
+                    <DataGridTextColumn
+                        Width="Auto"
+                        MinWidth="100"
+                        Binding="{Binding PurchaseStatus.DisplayName}"
+                        Header="ステータス" />
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ui:Button
+                                    Command="{Binding DataContext.CancelPurchaseCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    CommandParameter="{Binding}"
+                                    Content="取消" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding PurchaseStatus}" Value="{x:Static purchases:PurchaseStatus.Cancelled}">
+                                        <Setter Property="Visibility" Value="Hidden" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGridTemplateColumn.CellStyle>
+                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </GroupBox>

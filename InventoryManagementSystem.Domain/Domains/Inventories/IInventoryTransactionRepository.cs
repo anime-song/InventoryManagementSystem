@@ -1,12 +1,12 @@
-﻿using InventoryManagementSystem.Domain.Helpers;
-using InventoryManagementSystem.Domain.Inventories.Requests;
+﻿using InventoryManagementSystem.Domain.Applications.Inventories.Requests;
+using InventoryManagementSystem.Domain.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace InventoryManagementSystem.Domain.Inventories
+namespace InventoryManagementSystem.Domain.Domains.Inventories
 {
     public interface IInventoryTransactionRepository
     {

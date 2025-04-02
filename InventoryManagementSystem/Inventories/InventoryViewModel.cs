@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using InventoryManagementSystem.Domain.Inventories;
+using InventoryManagementSystem.Domain.Applications.Inventories;
+using InventoryManagementSystem.Domain.Domains.Inventories;
 using InventoryManagementSystem.WPF.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Reactive.Bindings;
@@ -17,12 +18,12 @@ namespace InventoryManagementSystem.WPF.Inventories
 {
     public partial class InventoryViewModel : ViewModel
     {
-        private readonly InventoryApplicationService inventoryApplicationService;
+        private readonly IInventoryApplicationService inventoryApplicationService;
         private readonly INavigationService navigation;
         private readonly IServiceProvider serviceProvider;
 
         public InventoryViewModel(
-            InventoryApplicationService inventoryApplicationService,
+            IInventoryApplicationService inventoryApplicationService,
             INavigationService navigationService,
             IServiceProvider serviceProvider,
             ISnackbarService snackbarService) : base(snackbarService)

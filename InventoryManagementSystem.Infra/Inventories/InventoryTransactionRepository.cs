@@ -1,6 +1,6 @@
-﻿using InventoryManagementSystem.Domain.Helpers;
-using InventoryManagementSystem.Domain.Inventories;
-using InventoryManagementSystem.Domain.Inventories.Requests;
+﻿using InventoryManagementSystem.Domain.Applications.Inventories.Requests;
+using InventoryManagementSystem.Domain.Domains.Inventories;
+using InventoryManagementSystem.Domain.Helpers;
 using LiteDB;
 using System;
 using System.Collections;
@@ -89,7 +89,9 @@ namespace InventoryManagementSystem.Infra.Inventories
                 transactionDate: entity.TransactionDate,
                 quantity: entity.Quantity,
                 inventoryId: entity.InventoryId,
-                canceledTransactionId: entity.CanceledTransactionId);
+                canceledTransactionId: entity.CanceledTransactionId,
+                sourceType: new TransactionSourceType(entity.SourceType),
+                sourceId: entity.SourceId);
         }
 
         private static InventoryTransactionEntity ToEntity(InventoryTransaction model)
@@ -101,7 +103,9 @@ namespace InventoryManagementSystem.Infra.Inventories
                 CanceledTransactionId = model.CanceledTransactionId,
                 Quantity = model.Quantity,
                 TransactionDate = model.TransactionDate,
-                TransactionType = model.TransactionType.Value
+                TransactionType = model.TransactionType.Value,
+                SourceType = model.TransactionSourceType.Value,
+                SourceId = model.SourceId,
             };
         }
     }

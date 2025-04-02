@@ -1,5 +1,6 @@
-﻿using InventoryManagementSystem.Domain.Inventories;
-using InventoryManagementSystem.Domain.Inventories.Requests;
+﻿using InventoryManagementSystem.Domain.Applications.Inventories;
+using InventoryManagementSystem.Domain.Applications.Inventories.Requests;
+using InventoryManagementSystem.Domain.Domains.Inventories;
 using InventoryManagementSystem.WPF.Controls;
 using InventoryManagementSystem.WPF.ViewModels;
 using Reactive.Bindings;
@@ -19,10 +20,10 @@ namespace InventoryManagementSystem.WPF.Inventories
         public InventoryTransactionSearchViewModel InventoryTransactionSearchViewModel { get; } = new InventoryTransactionSearchViewModel();
         public PaginationControlViewModel PaginationControlViewModel { get; } = new PaginationControlViewModel();
 
-        private readonly InventoryApplicationService inventoryApplicationService;
+        private readonly IInventoryApplicationService inventoryApplicationService;
 
         public InventoryTransactionViewModel(
-            InventoryApplicationService inventoryApplicationService,
+            IInventoryApplicationService inventoryApplicationService,
             ISnackbarService snackbarService) : base(snackbarService)
         {
             this.inventoryApplicationService = inventoryApplicationService;

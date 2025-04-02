@@ -1,4 +1,4 @@
-﻿namespace InventoryManagementSystem.Domain.Inventories.Requests
+﻿namespace InventoryManagementSystem.Domain.Applications.Inventories.Requests
 {
     public sealed class FindTransactionRequest
     {

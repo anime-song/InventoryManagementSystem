@@ -1,4 +1,5 @@
-﻿using InventoryManagementSystem.Domain.Inventories;
+﻿using InventoryManagementSystem.Domain.Applications.Inventories;
+using InventoryManagementSystem.Domain.Domains.Inventories;
 using InventoryManagementSystem.WPF.ViewModels;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -15,11 +16,11 @@ namespace InventoryManagementSystem.WPF.Inventories
 {
     public partial class LocationRegisterViewModel : ViewModel
     {
-        private readonly InventoryApplicationService inventoryApplicationService;
+        private readonly IInventoryApplicationService inventoryApplicationService;
         private readonly ISnackbarService snackbarService;
 
         public LocationRegisterViewModel(
-            InventoryApplicationService inventoryApplicationService,
+            IInventoryApplicationService inventoryApplicationService,
             ISnackbarService snackbarService) : base(snackbarService)
         {
             this.inventoryApplicationService = inventoryApplicationService;
