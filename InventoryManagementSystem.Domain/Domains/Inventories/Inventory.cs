@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace InventoryManagementSystem.Domain.Inventories
+namespace InventoryManagementSystem.Domain.Domains.Inventories
 {
     public sealed class Inventory
     {

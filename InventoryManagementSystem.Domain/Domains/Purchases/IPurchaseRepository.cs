@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace InventoryManagementSystem.Domain.Purchases
+namespace InventoryManagementSystem.Domain.Domains.Purchases
 {
     public interface IPurchaseRepository
     {

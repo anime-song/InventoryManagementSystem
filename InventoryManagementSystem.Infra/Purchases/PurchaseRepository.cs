@@ -1,4 +1,4 @@
-﻿using InventoryManagementSystem.Domain.Purchases;
+﻿using InventoryManagementSystem.Domain.Domains.Purchases;
 using LiteDB;
 using System;
 using System.Collections.Generic;

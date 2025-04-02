@@ -1,6 +1,9 @@
-﻿using InventoryManagementSystem.Domain.Inventories;
-using InventoryManagementSystem.Domain.Inventories.Requests;
-using InventoryManagementSystem.Domain.Purchases;
+﻿using InventoryManagementSystem.Domain.Applications;
+using InventoryManagementSystem.Domain.Applications.Inventories;
+using InventoryManagementSystem.Domain.Applications.Inventories.Requests;
+using InventoryManagementSystem.Domain.Applications.Purchases;
+using InventoryManagementSystem.Domain.Domains.Inventories;
+using InventoryManagementSystem.Domain.Domains.Purchases;
 using Moq;
 using System;
 using System.Collections.Generic;

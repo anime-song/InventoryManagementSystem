@@ -1,5 +1,6 @@
-﻿using InventoryManagementSystem.Domain.Inventories;
-using InventoryManagementSystem.Domain.Purchases;
+﻿using InventoryManagementSystem.Domain.Applications.Inventories;
+using InventoryManagementSystem.Domain.Applications.Purchases;
+using InventoryManagementSystem.Domain.Domains.Inventories;
 using InventoryManagementSystem.Infra.Inventories;
 using InventoryManagementSystem.WPF.Inventories;
 using LiteDB;

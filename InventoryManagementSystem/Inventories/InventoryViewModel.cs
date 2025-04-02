@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using InventoryManagementSystem.Domain.Inventories;
+using InventoryManagementSystem.Domain.Applications.Inventories;
+using InventoryManagementSystem.Domain.Domains.Inventories;
 using InventoryManagementSystem.WPF.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Reactive.Bindings;

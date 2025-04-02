@@ -1,5 +1,6 @@
-﻿using InventoryManagementSystem.Domain.Helpers;
-using InventoryManagementSystem.Domain.Inventories.Requests;
+﻿using InventoryManagementSystem.Domain.Applications.Inventories.Requests;
+using InventoryManagementSystem.Domain.Domains.Inventories;
+using InventoryManagementSystem.Domain.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace InventoryManagementSystem.Domain.Inventories
+namespace InventoryManagementSystem.Domain.Applications.Inventories
 {
     public interface IInventoryApplicationService
     {

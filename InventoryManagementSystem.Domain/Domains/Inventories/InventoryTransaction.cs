@@ -1,4 +1,4 @@
-﻿namespace InventoryManagementSystem.Domain.Inventories
+﻿namespace InventoryManagementSystem.Domain.Domains.Inventories
 {
     public sealed record TransactionType
     {

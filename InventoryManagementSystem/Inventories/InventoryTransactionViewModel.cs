@@ -1,5 +1,6 @@
-﻿using InventoryManagementSystem.Domain.Inventories;
-using InventoryManagementSystem.Domain.Inventories.Requests;
+﻿using InventoryManagementSystem.Domain.Applications.Inventories;
+using InventoryManagementSystem.Domain.Applications.Inventories.Requests;
+using InventoryManagementSystem.Domain.Domains.Inventories;
 using InventoryManagementSystem.WPF.Controls;
 using InventoryManagementSystem.WPF.ViewModels;
 using Reactive.Bindings;

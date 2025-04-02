@@ -1,11 +1,14 @@
-﻿using InventoryManagementSystem.Domain.Inventories;
+﻿using InventoryManagementSystem.Domain.Applications.Inventories;
+using InventoryManagementSystem.Domain.Applications.Inventories.Requests;
+using InventoryManagementSystem.Domain.Domains.Inventories;
+using InventoryManagementSystem.Domain.Domains.Purchases;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace InventoryManagementSystem.Domain.Purchases
+namespace InventoryManagementSystem.Domain.Applications.Purchases
 {
     public interface IPurchaseApplicationService
     {
@@ -89,7 +92,7 @@ namespace InventoryManagementSystem.Domain.Purchases
             var purchase = purchaseRepository.FindById(purchaseId)
                 ?? throw new InvalidOperationException($"ID: {purchaseId}の仕入が存在しません");
 
-            var transactions = inventoryApplicationService.FindTransaction(new Inventories.Requests.FindTransactionRequest()
+            var transactions = inventoryApplicationService.FindTransaction(new FindTransactionRequest()
             {
                 InventoryId = purchase.InventoryId,
             });

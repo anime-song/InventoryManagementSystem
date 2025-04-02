@@ -1,6 +1,6 @@
-﻿using InventoryManagementSystem.Domain.Helpers;
-using InventoryManagementSystem.Domain.Inventories;
-using InventoryManagementSystem.Domain.Inventories.Requests;
+﻿using InventoryManagementSystem.Domain.Applications.Inventories.Requests;
+using InventoryManagementSystem.Domain.Domains.Inventories;
+using InventoryManagementSystem.Domain.Helpers;
 using LiteDB;
 using System;
 using System.Collections;

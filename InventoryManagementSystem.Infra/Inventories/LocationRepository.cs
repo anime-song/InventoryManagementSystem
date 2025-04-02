@@ -1,4 +1,4 @@
-﻿using InventoryManagementSystem.Domain.Inventories;
+﻿using InventoryManagementSystem.Domain.Domains.Inventories;
 using LiteDB;
 using System;
 using System.Collections.Generic;

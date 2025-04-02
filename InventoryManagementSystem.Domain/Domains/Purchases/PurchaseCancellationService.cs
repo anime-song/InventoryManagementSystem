@@ -1,12 +1,12 @@
-﻿using InventoryManagementSystem.Domain.Inventories;
-using InventoryManagementSystem.Domain.Inventories.Requests;
+﻿using InventoryManagementSystem.Domain.Applications.Inventories;
+using InventoryManagementSystem.Domain.Domains.Inventories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace InventoryManagementSystem.Domain.Purchases
+namespace InventoryManagementSystem.Domain.Domains.Purchases
 {
     public sealed class PurchaseCancellationService
     {
