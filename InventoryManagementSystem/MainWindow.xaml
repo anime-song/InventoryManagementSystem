@@ -7,6 +7,7 @@
     xmlns:inventories="clr-namespace:InventoryManagementSystem.WPF.Inventories"
     xmlns:local="clr-namespace:InventoryManagementSystem"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:purchases="clr-namespace:InventoryManagementSystem.WPF.Purchases"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     Title="MainWindow"
     Width="1300"
@@ -37,15 +38,10 @@
                     Tag="inventory"
                     TargetPageType="{x:Type inventories:InventoryPage}" />
                 <ui:NavigationViewItem
-                    Content="在庫登録"
+                    Content="仕入"
                     Icon="{ui:SymbolIcon Symbol=Backpack24}"
                     Tag="register"
-                    TargetPageType="{x:Type inventories:InventoryRegisterPage}" />
-                <ui:NavigationViewItem
-                    Content="入庫・出庫"
-                    Icon="{ui:SymbolIcon Symbol=BackpackAdd24}"
-                    Tag="storeWithdraw"
-                    TargetPageType="{x:Type inventories:StoreWithdrawPage}" />
+                    TargetPageType="{x:Type purchases:PurchaseRegisterPage}" />
                 <ui:NavigationViewItem
                     Content="在庫履歴"
                     Icon="{ui:SymbolIcon Symbol=History24}"

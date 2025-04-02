@@ -10,7 +10,23 @@ namespace InventoryManagementSystem.Domain.Domains.Purchases
     {
         public static readonly PurchaseStatus Normal = new PurchaseStatus(0);
         public static readonly PurchaseStatus Cancelled = new PurchaseStatus(1);
-        public static readonly PurchaseStatus Corrected = new PurchaseStatus(2);
+
+        public string DisplayName
+        {
+            get
+            {
+                if (this == Normal)
+                {
+                    return "通常";
+                }
+                else if (this == Cancelled)
+                {
+                    return "取消済み";
+                }
+
+                return "未定義";
+            }
+        }
 
         public int Value { get; }
         public PurchaseStatus(int value)

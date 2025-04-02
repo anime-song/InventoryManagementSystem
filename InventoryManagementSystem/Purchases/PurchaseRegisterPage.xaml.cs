@@ -14,17 +14,19 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Wpf.Ui.Abstractions.Controls;
 
-namespace InventoryManagementSystem.WPF.Inventories
+namespace InventoryManagementSystem.WPF.Purchases
 {
-    public partial class InventoryRegisterPage : INavigableView<InventoryRegisterViewModel>
+    /// <summary>
+    /// PurchaseRegisterPage.xaml の相互作用ロジック
+    /// </summary>
+    public partial class PurchaseRegisterPage : INavigableView<PurchaseRegisterViewModel>
     {
-        public InventoryRegisterViewModel ViewModel { get; }
+        public PurchaseRegisterViewModel ViewModel { get; }
 
-        public InventoryRegisterPage(InventoryRegisterViewModel viewModel)
+        public PurchaseRegisterPage(PurchaseRegisterViewModel viewModel)
         {
             ViewModel = viewModel;
             DataContext = ViewModel;
-
             InitializeComponent();
         }
     }

@@ -14,8 +14,4 @@
     <None Include="F:\Github\InventoryManagementSystem\InventoryManagementSystem.Domain\.editorconfig" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Queries\" />
-  </ItemGroup>
-
 </Project>

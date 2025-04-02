@@ -1,56 +1,66 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using InventoryManagementSystem.Domain.Applications.Inventories;
+﻿using InventoryManagementSystem.Domain.Applications.Inventories;
+using InventoryManagementSystem.Domain.Applications.Purchases;
 using InventoryManagementSystem.Domain.Domains.Inventories;
+using InventoryManagementSystem.Domain.Queries.Purchases;
 using InventoryManagementSystem.WPF.ViewModels;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Wpf.Ui;
 
-namespace InventoryManagementSystem.WPF.Inventories
+namespace InventoryManagementSystem.WPF.Purchases
 {
-    public partial class InventoryRegisterViewModel : ViewModel
+    public partial class PurchaseRegisterViewModel : ViewModel
     {
-        private readonly IInventoryApplicationService inventoryApplicationService;
         private readonly ISnackbarService snackbarService;
+        private readonly IInventoryApplicationService inventoryApplicationService;
+        private readonly IPurchaseApplicationService purchaseApplicationService;
+        private readonly IPurchaseQueryService purchaseQueryService;
 
-        public InventoryRegisterViewModel(
+        public PurchaseRegisterViewModel(
             IInventoryApplicationService inventoryApplicationService,
+            IPurchaseApplicationService purchaseApplicationService,
+            IPurchaseQueryService purchaseQueryService,
             ISnackbarService snackbarService) : base(snackbarService)
         {
             this.inventoryApplicationService = inventoryApplicationService;
+            this.purchaseApplicationService = purchaseApplicationService;
+            this.purchaseQueryService = purchaseQueryService;
             this.snackbarService = snackbarService;
 
             ItemName.SetValidateAttribute(() => ItemName);
             Quantity.SetValidateAttribute(() => Quantity);
             SelectedLocation.SetValidateAttribute(() => SelectedLocation);
-            TransactionDate.SetValidateAttribute(() => TransactionDate);
+            PurchaseDate.SetValidateAttribute(() => PurchaseDate);
 
             ExecuteCommand = new[] {
                 ItemName.ObserveHasErrors,
                 Quantity.ObserveHasErrors,
                 SelectedLocation.ObserveHasErrors,
-                TransactionDate.ObserveHasErrors }
+                PurchaseDate.ObserveHasErrors
+            }
             .CombineLatestValuesAreAllFalse()
             .ToReactiveCommand()
             .WithSubscribe(Execute);
 
+            CancelPurchaseCommand = new ReactiveCommand<PurchaseInventoryDTO>()
+                .WithSubscribe(CancelPurchase);
+
             // 初期化処理
-            LoadLocations(); // 保管場所を取得を先に呼ぶ必要あり
-            LoadRecentInventories();
+            LoadLocations();
+            LoadRecentPurchases();
             ClearInputValue();
         }
 
+        public ReactiveCollection<PurchaseInventoryDTO> RecentPurchases { get; } = new ReactiveCollection<PurchaseInventoryDTO>();
+
         public ReactiveCollection<Location> Locations { get; } = new ReactiveCollection<Location>();
-        public ReactiveCollection<RecentInventoryDisplayModel> RecentInventories { get; } = new ReactiveCollection<RecentInventoryDisplayModel>();
 
         [Required(ErrorMessage = "商品名を入力してください", AllowEmptyStrings = false)]
         public ReactiveProperty<string> ItemName { get; } = new ReactiveProperty<string>();
@@ -63,34 +73,47 @@ namespace InventoryManagementSystem.WPF.Inventories
         public ReactiveProperty<Location> SelectedLocation { get; } = new ReactiveProperty<Location>();
 
         [Required(ErrorMessage = "日付を入力してください")]
-        public ReactiveProperty<DateTime?> TransactionDate { get; } = new ReactiveProperty<DateTime?>(DateTime.Today);
+        public ReactiveProperty<DateTime?> PurchaseDate { get; } = new ReactiveProperty<DateTime?>(DateTime.Today);
 
         public ReactiveCommand ExecuteCommand { get; }
+        public ReactiveCommand<PurchaseInventoryDTO> CancelPurchaseCommand { get; }
 
         private void Execute()
         {
             RunWithErrorNotify(() =>
             {
-                var registeredInventory = inventoryApplicationService.Register(
+                purchaseApplicationService.RegisterPurchase(
                     itemName: ItemName.Value,
-                    quantity: 0,
-                    locationId: SelectedLocation.Value.Id!.Value);
-                inventoryApplicationService.Store(
-                    inventoryId: registeredInventory.Id!.Value,
+                    purchaseDate: PurchaseDate.Value!.Value,
                     quantity: Quantity.Value!.Value,
-                    storeDate: TransactionDate.Value!.Value,
-                    sourceType: TransactionSourceType.Manual,
-                    sourceId: null);
+                    locationId: SelectedLocation.Value.Id!.Value);
 
                 snackbarService.Show(
                     "登録完了",
-                    "在庫を登録しました",
+                    "仕入を登録しました",
                     Wpf.Ui.Controls.ControlAppearance.Success,
                     icon: null,
                     timeout: TimeSpan.FromSeconds(5));
 
-                LoadRecentInventories();
+                LoadRecentPurchases();
                 ClearInputValue();
+            });
+        }
+
+        private void CancelPurchase(PurchaseInventoryDTO purchase)
+        {
+            RunWithErrorNotify(() =>
+            {
+                purchaseApplicationService.CancelPurchase(purchase.PurchaseId);
+
+                snackbarService.Show(
+                    "登録完了",
+                    "仕入を取消しました",
+                    Wpf.Ui.Controls.ControlAppearance.Success,
+                    icon: null,
+                    timeout: TimeSpan.FromSeconds(5));
+
+                LoadRecentPurchases();
             });
         }
 
@@ -98,20 +121,17 @@ namespace InventoryManagementSystem.WPF.Inventories
         {
             ItemName.Value = null;
             Quantity.Value = null;
-            TransactionDate.Value = DateTime.Today;
+            PurchaseDate.Value = DateTime.Today;
             SelectedLocation.Value = null;
         }
 
-        /// <summary>
-        /// 直近の在庫を取得します
-        /// </summary>
-        private void LoadRecentInventories()
+        private void LoadRecentPurchases()
         {
-            var recentItems = inventoryApplicationService.GetLatest(5);
-            RecentInventories.Clear();
-            foreach (var item in recentItems)
+            RecentPurchases.Clear();
+            var purchases = purchaseQueryService.GetLatest(5);
+            foreach (var purchase in purchases)
             {
-                RecentInventories.Add(RecentInventoryDisplayModel.FromInventory(item, Locations));
+                RecentPurchases.Add(purchase);
             }
         }
 
