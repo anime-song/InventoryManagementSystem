@@ -16,5 +16,8 @@ namespace InventoryManagementSystem.Infra.Inventories
         public int Quantity { get; set; }
         public int LocationId { get; set; }
         public DateTime RegisteredDate { get; set; }
+
+        public int Status { get; set; }
+        public int? ParentInventoryId { get; set; }
     }
 }

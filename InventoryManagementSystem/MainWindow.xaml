@@ -38,6 +38,11 @@
                     Tag="inventory"
                     TargetPageType="{x:Type inventories:InventoryPage}" />
                 <ui:NavigationViewItem
+                    Content="在庫分割"
+                    Icon="{ui:SymbolIcon Symbol=BoardSplit24}"
+                    Tag="splitInventory"
+                    TargetPageType="{x:Type inventories:InventorySplitPage}" />
+                <ui:NavigationViewItem
                     Content="仕入"
                     Icon="{ui:SymbolIcon Symbol=Backpack24}"
                     Tag="register"

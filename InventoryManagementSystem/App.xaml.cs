@@ -2,6 +2,7 @@
 using InventoryManagementSystem.Domain.Applications.Purchases;
 using InventoryManagementSystem.Domain.Domains.Inventories;
 using InventoryManagementSystem.Domain.Domains.Purchases;
+using InventoryManagementSystem.Domain.Queries.Inventories;
 using InventoryManagementSystem.Domain.Queries.Purchases;
 using InventoryManagementSystem.Infra.Inventories;
 using InventoryManagementSystem.Infra.Purchases;
@@ -42,6 +43,7 @@ namespace InventoryManagementSystem
             services.AddSingleton<IPurchaseApplicationService, PurchaseApplicationService>();
 
             services.AddSingleton<IPurchaseQueryService, PurchaseQueryService>();
+            services.AddSingleton<IInventoryQueryService, InventoryQueryService>();
 
             services.AddTransient<InventoryViewModel>();
             services.AddTransient<InventoryPage>();
@@ -51,8 +53,11 @@ namespace InventoryManagementSystem
             services.AddTransient<InventoryTransactionPage>();
             services.AddTransient<StoreWithdrawViewModel>();
             services.AddTransient<StoreWithdrawPage>();
+            services.AddTransient<InventorySplitViewModel>();
+            services.AddTransient<InventorySplitPage>();
             services.AddTransient<PurchaseRegisterViewModel>();
             services.AddTransient<PurchaseRegisterPage>();
+
             services.AddSingleton<MainWindow>();
             services.AddSingleton<ISnackbarService, SnackbarService>(); // スナックバー表示用
 

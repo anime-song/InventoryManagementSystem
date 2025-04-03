@@ -1,4 +1,5 @@
 using InventoryManagementSystem.Domain.Applications.Inventories;
+using InventoryManagementSystem.Domain.Applications.Inventories.Requests;
 using InventoryManagementSystem.Domain.Domains.Inventories;
 using Moq;
 
@@ -23,7 +24,14 @@ namespace InventoryManagementSystem.Tests
         [Fact(DisplayName = "在庫が存在する場合正しく入庫し数量が加算される")]
         public void Store_ShouldAddInventoryTransaction_WhenInventoryExists()
         {
-            var inventory = Inventory.FromPersistence(id: 1, itemName: "本", quantity: 5, locationId: 2, registeredDate: DateTime.Now);
+            var inventory = Inventory.FromPersistence(
+                id: 1,
+                itemName: "本",
+                quantity: 5,
+                locationId: 2,
+                registeredDate: DateTime.Now,
+                status: InventoryStatus.Active,
+                parentInventoryId: null);
             var mockInventoryRepo = new Mock<IInventoryRepository>();
             var mockTransactionRepo = new Mock<IInventoryTransactionRepository>();
             var mockLocationRepo = new Mock<ILocationRepository>();
@@ -41,7 +49,9 @@ namespace InventoryManagementSystem.Tests
         [Fact(DisplayName = "在庫が存在する場合正しく出庫し数量が減算される")]
         public void Withdraw_ShouldReduceInventoryAndAddTransaction_WhenSufficientInventory()
         {
-            var inventory = Inventory.FromPersistence(id: 1, itemName: "本", quantity: 5, locationId: 2, registeredDate: DateTime.Now);
+            var inventory = Inventory.FromPersistence(id: 1, itemName: "本", quantity: 5, locationId: 2, registeredDate: DateTime.Now,
+                status: InventoryStatus.Active,
+                parentInventoryId: null);
             var mockInventoryRepo = new Mock<IInventoryRepository>();
             var mockTransactionRepo = new Mock<IInventoryTransactionRepository>();
             var mockLocationRepo = new Mock<ILocationRepository>();
@@ -61,7 +71,9 @@ namespace InventoryManagementSystem.Tests
         [InlineData(5, 0)]
         public void Withdraw_ShouldSucceed_WhenQuantityIsLessThanOrEqualToStock(int withdrawQuantity, int expectedRemaining)
         {
-            var inventory = Inventory.FromPersistence(id: 1, itemName: "本", quantity: 5, locationId: 2, registeredDate: DateTime.Now);
+            var inventory = Inventory.FromPersistence(id: 1, itemName: "本", quantity: 5, locationId: 2, registeredDate: DateTime.Now,
+                status: InventoryStatus.Active,
+                parentInventoryId: null);
             var mockInventoryRepo = new Mock<IInventoryRepository>();
             var mockTransactionRepo = new Mock<IInventoryTransactionRepository>();
             var mockLocationRepo = new Mock<ILocationRepository>();
@@ -86,7 +98,9 @@ namespace InventoryManagementSystem.Tests
         [MemberData(nameof(CancelTransactionTestCases))]
         public void CancelTransaction_ShouldCancelTransaction(TransactionType transactionType, int expectedRemaining)
         {
-            var inventory = Inventory.FromPersistence(id: 1, itemName: "本", quantity: 5, locationId: 2, registeredDate: DateTime.Now);
+            var inventory = Inventory.FromPersistence(id: 1, itemName: "本", quantity: 5, locationId: 2, registeredDate: DateTime.Now,
+                status: InventoryStatus.Active,
+                parentInventoryId: null);
             var inventoryTransaction = InventoryTransaction.FromPersistence(
                 id: 1,
                 transactionType: transactionType,
@@ -141,7 +155,9 @@ namespace InventoryManagementSystem.Tests
         [Fact(DisplayName = "在庫トランザクションがない場合例外を投げる")]
         public void CancelTransaction_ShouldThrow_WhenInventoryTransactionDoesNotExists()
         {
-            var inventory = Inventory.FromPersistence(id: 1, itemName: "本", quantity: 5, locationId: 2, registeredDate: DateTime.Now);
+            var inventory = Inventory.FromPersistence(id: 1, itemName: "本", quantity: 5, locationId: 2, registeredDate: DateTime.Now,
+                status: InventoryStatus.Active,
+                parentInventoryId: null);
             var mockInventoryRepo = new Mock<IInventoryRepository>();
             var mockTransactionRepo = new Mock<IInventoryTransactionRepository>();
             var mockLocationRepo = new Mock<ILocationRepository>();
@@ -159,7 +175,9 @@ namespace InventoryManagementSystem.Tests
         [Fact(DisplayName = "トランザクションキャンセル時に在庫がマイナスになる場合例外を投げる")]
         public void CancelTransaction_ShouldThrow_WhenInventoryQuantityWouldBecomeNegative()
         {
-            var inventory = Inventory.FromPersistence(id: 1, itemName: "本", quantity: 5, locationId: 2, registeredDate: DateTime.Now);
+            var inventory = Inventory.FromPersistence(id: 1, itemName: "本", quantity: 5, locationId: 2, registeredDate: DateTime.Now,
+                status: InventoryStatus.Active,
+                parentInventoryId: null);
             var inventoryTransaction = InventoryTransaction.FromPersistence(
                 id: 1,
                 transactionType: TransactionType.In,
@@ -201,7 +219,9 @@ namespace InventoryManagementSystem.Tests
         [Fact(DisplayName = "在庫が存在し出庫数量が在庫数量より多い場合例外を投げる")]
         public void Withdraw_ShouldThrow_WhenQuantityExceedsInventoryQuantity()
         {
-            var inventory = Inventory.FromPersistence(id: 1, itemName: "本", quantity: 5, locationId: 2, registeredDate: DateTime.Now);
+            var inventory = Inventory.FromPersistence(id: 1, itemName: "本", quantity: 5, locationId: 2, registeredDate: DateTime.Now,
+                status: InventoryStatus.Active,
+                parentInventoryId: null);
             var mockInventoryRepo = new Mock<IInventoryRepository>();
             var mockTransactionRepo = new Mock<IInventoryTransactionRepository>();
             var mockLocationRepo = new Mock<ILocationRepository>();
@@ -212,6 +232,103 @@ namespace InventoryManagementSystem.Tests
             Assert.Throws<InvalidOperationException>(
                 () => service.Withdraw(
                     inventoryId: 1, quantity: 6, withdrawDate: DateTime.Today, sourceType: TransactionSourceType.Manual, sourceId: null));
+        }
+
+        [Fact(DisplayName = "在庫を2つに分割したとき、元在庫の状態変更と分割在庫・トランザクションが正しく登録される")]
+        public void SplitInventory_ShouldRecordTransactions()
+        {
+            // Arrange
+            var mockInventoryRepo = new Mock<IInventoryRepository>();
+            var mockTransactionRepo = new Mock<IInventoryTransactionRepository>();
+            var mockLocationRepo = new Mock<ILocationRepository>();
+
+            // 元在庫の準備
+            var sourceInventoryId = 1;
+            var sourceInventory = Inventory.FromPersistence(
+                id: sourceInventoryId,
+                itemName: "商品A",
+                quantity: 10,
+                locationId: 3,
+                registeredDate: DateTime.Now,
+                status: InventoryStatus.Active,
+                parentInventoryId: null);
+            mockInventoryRepo.Setup(r => r.FindById(It.Is<int>(x => x == sourceInventoryId))).Returns(sourceInventory);
+
+            // 分割リクエストの準備
+            var request = new SplitInventoryRequest(
+                sourceInventoryId: sourceInventoryId,
+                items: [
+                    new (itemName: "商品B", quantity: 5, locationId: 1),
+                    new (itemName: "商品C", quantity: 4, locationId: 2),
+                ]);
+            mockInventoryRepo.Setup(r => r.Add(It.Is<Inventory>(x => x.ItemName == "商品B")))
+                .Returns<Inventory>(x => Inventory.FromPersistence(
+                    2, x.ItemName, x.Quantity, x.LocationId, x.RegisteredDate, x.Status, x.ParentInventoryId));
+            mockInventoryRepo.Setup(r => r.Add(It.Is<Inventory>(x => x.ItemName == "商品C")))
+                .Returns<Inventory>(x => Inventory.FromPersistence(
+                    3, x.ItemName, x.Quantity, x.LocationId, x.RegisteredDate, x.Status, x.ParentInventoryId));
+
+            var service = new InventoryApplicationService(mockInventoryRepo.Object, mockTransactionRepo.Object, mockLocationRepo.Object);
+
+            // Act
+            service.SplitInventory(request);
+
+            // Assert
+            // 元在庫が更新され、ステータスがSplit、数量が0になっている
+            mockInventoryRepo.Verify(r => r.Update(It.Is<Inventory>(
+                x => x.Id == sourceInventoryId &&
+                x.Status == InventoryStatus.Split &&
+                x.Quantity == 0)), Times.Once);
+
+            // 分割された在庫が2件登録されている
+            mockInventoryRepo.Verify(r => r.Add(It.Is<Inventory>(x =>
+                (x.ItemName == "商品B" || x.ItemName == "商品C") &&
+                x.Status == InventoryStatus.Active &&
+                (x.Quantity == 5 || x.Quantity == 4) &&
+                x.ParentInventoryId == sourceInventoryId
+            )), Times.Exactly(2));
+
+            // トランザクションが1 (出庫) + 2 (入庫) 登録されている
+            mockTransactionRepo.Verify(r => r.Add(It.IsAny<InventoryTransaction>()), Times.Exactly(3));
+        }
+
+        [Fact(DisplayName = "元在庫が分割済みのとき、再分割しようとすると例外を投げる")]
+        public void SplitInventory_ShouldThrows_WhenSourceAlreadySplit()
+        {
+            // Arrange
+            var mockInventoryRepo = new Mock<IInventoryRepository>();
+            var mockTransactionRepo = new Mock<IInventoryTransactionRepository>();
+            var mockLocationRepo = new Mock<ILocationRepository>();
+
+            // 元在庫の準備
+            var sourceInventoryId = 1;
+            var sourceInventory = Inventory.FromPersistence(
+                id: sourceInventoryId,
+                itemName: "商品A",
+                quantity: 10,
+                locationId: 3,
+                registeredDate: DateTime.Now,
+                status: InventoryStatus.Active,
+                parentInventoryId: null);
+            // 分割済みにする
+            sourceInventory.MarkAsSplit();
+            mockInventoryRepo.Setup(r => r.FindById(It.Is<int>(x => x == sourceInventoryId))).Returns(sourceInventory);
+
+            var request = new SplitInventoryRequest(
+                sourceInventoryId: sourceInventoryId,
+                items: [
+                    new (itemName: "商品B", quantity: 5, locationId: 1),
+                    new (itemName: "商品C", quantity: 4, locationId: 2),
+                ]);
+
+            var service = new InventoryApplicationService(mockInventoryRepo.Object, mockTransactionRepo.Object, mockLocationRepo.Object);
+
+            // Act & Assert
+            var ex = Assert.Throws<InvalidOperationException>(() =>
+            {
+                service.SplitInventory(request);
+            });
+            Assert.Equal("分割ができない状態の在庫です", ex.Message);
         }
     }
 }

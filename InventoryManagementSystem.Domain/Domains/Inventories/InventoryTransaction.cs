@@ -1,4 +1,6 @@
-﻿namespace InventoryManagementSystem.Domain.Domains.Inventories
+﻿using System.Security.AccessControl;
+
+namespace InventoryManagementSystem.Domain.Domains.Inventories
 {
     public sealed record TransactionType
     {
@@ -41,6 +43,8 @@
         public static readonly TransactionSourceType Purchase = new TransactionSourceType(0);
         public static readonly TransactionSourceType Sales = new TransactionSourceType(1);
         public static readonly TransactionSourceType Manual = new TransactionSourceType(2);
+        public static readonly TransactionSourceType Split = new TransactionSourceType(3);
+        public static readonly TransactionSourceType SplitSource = new TransactionSourceType(4);
 
         public int Value { get; }
         public TransactionSourceType(int value)
@@ -78,6 +82,21 @@
                 canceledTransactionId: null,
                 sourceType: sourceType,
                 sourceId: sourceId);
+        }
+
+        public static InventoryTransaction CreateFromSplitSource(
+            int quantity,
+            int inventoryId)
+        {
+            return new InventoryTransaction(
+                id: null,
+                transactionType: TransactionType.Out,
+                transactionDate: DateTime.Now,
+                quantity: quantity,
+                inventoryId: inventoryId,
+                canceledTransactionId: null,
+                sourceType: TransactionSourceType.SplitSource,
+                sourceId: null);
         }
 
         public static InventoryTransaction FromPersistence(
