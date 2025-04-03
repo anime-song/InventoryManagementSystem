@@ -1,13 +1,6 @@
 ﻿using InventoryManagementSystem.Domain.Applications.Inventories.Requests;
 using InventoryManagementSystem.Domain.Domains.Inventories;
 using InventoryManagementSystem.Domain.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace InventoryManagementSystem.Domain.Applications.Inventories
 {
@@ -51,6 +44,8 @@ namespace InventoryManagementSystem.Domain.Applications.Inventories
             int inventoryTransactionId,
             TransactionSourceType sourceType,
             int? sourceId);
+
+        void SplitInventory(SplitInventoryRequest request);
     }
 
     public sealed class InventoryApplicationService : IInventoryApplicationService
@@ -266,6 +261,46 @@ namespace InventoryManagementSystem.Domain.Applications.Inventories
                 sourceType: sourceType,
                 sourceId: sourceId);
             inventoryTransactionRepository.Add(cancelTransaction);
+        }
+
+        /// <summary>
+        /// 在庫を分割します
+        /// </summary>
+        /// <param name="request"></param>
+        /// <exception cref="InvalidOperationException"></exception>
+        public void SplitInventory(SplitInventoryRequest request)
+        {
+            var source = inventoryRepository.FindById(request.SourceInventoryId)
+                ?? throw new InvalidOperationException("指令された在庫が存在しません");
+
+            var sourceOutQuantity = source.MarkAsSplit();
+            inventoryRepository.Update(source);
+
+            // 在庫トランザクションの登録
+            var transaction = InventoryTransaction.CreateFromSplitSource(
+                quantity: sourceOutQuantity,
+                inventoryId: source.Id!.Value);
+            inventoryTransactionRepository.Add(transaction);
+
+            foreach (var requestItem in request.Items)
+            {
+                var inventory = Inventory.CreateFromSplit(
+                    parentInventoryId: source.Id!.Value,
+                    itemName: requestItem.ItemName,
+                    initialQuantity: requestItem.Quantity,
+                    locationId: requestItem.LocationId);
+                inventory = inventoryRepository.Add(inventory);
+
+                // 在庫トランザクションの登録
+                var transactionInner = InventoryTransaction.CreateNew(
+                    transactionType: TransactionType.In,
+                    transactionDate: inventory.RegisteredDate,
+                    quantity: requestItem.Quantity,
+                    inventoryId: inventory.Id!.Value,
+                    sourceType: TransactionSourceType.Split,
+                    sourceId: source.Id!.Value);
+                inventoryTransactionRepository.Add(transactionInner);
+            }
         }
     }
 }

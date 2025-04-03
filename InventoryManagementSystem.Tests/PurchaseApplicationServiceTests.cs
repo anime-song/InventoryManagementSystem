@@ -24,7 +24,13 @@ namespace InventoryManagementSystem.Tests
             var inventoryId = 100;
             int quantity = 10;
             var inventory = Inventory.FromPersistence(
-                id: inventoryId, itemName: "商品A", quantity: quantity, locationId: 1, registeredDate: DateTime.Now.Date);
+                id: inventoryId,
+                itemName: "商品A",
+                quantity: quantity,
+                locationId: 1,
+                registeredDate: DateTime.Now.Date,
+                status: InventoryStatus.Active,
+                parentInventoryId: null);
             mockInventoryService.Setup(r => r.Register(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(inventory);
 

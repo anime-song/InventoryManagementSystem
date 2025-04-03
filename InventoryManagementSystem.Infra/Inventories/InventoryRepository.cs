@@ -68,7 +68,9 @@ namespace InventoryManagementSystem.Infra.Inventories
                 itemName: entity.ItemName,
                 quantity: entity.Quantity,
                 locationId: entity.LocationId,
-                registeredDate: entity.RegisteredDate);
+                registeredDate: entity.RegisteredDate,
+                status: new InventoryStatus(entity.Status),
+                parentInventoryId: entity.ParentInventoryId);
         }
 
         private static InventoryEntity ToEntity(Inventory inventory)
@@ -79,7 +81,9 @@ namespace InventoryManagementSystem.Infra.Inventories
                 ItemName = inventory.ItemName,
                 LocationId = inventory.LocationId,
                 Quantity = inventory.Quantity,
-                RegisteredDate = inventory.RegisteredDate
+                RegisteredDate = inventory.RegisteredDate,
+                Status = inventory.Status.Value,
+                ParentInventoryId = inventory.ParentInventoryId
             };
         }
     }
