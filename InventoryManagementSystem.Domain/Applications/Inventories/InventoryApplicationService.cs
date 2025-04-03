@@ -8,6 +8,8 @@ namespace InventoryManagementSystem.Domain.Applications.Inventories
     {
         IEnumerable<Inventory> Find(string keyword);
 
+        Inventory FindById(int inventoryId);
+
         IEnumerable<InventoryTransaction> FindTransaction(FindTransactionRequest request);
 
         PageResult<InventoryTransaction> FindTransactionWithPagenate(
@@ -72,6 +74,17 @@ namespace InventoryManagementSystem.Domain.Applications.Inventories
         public IEnumerable<Inventory> Find(string keyword)
         {
             return inventoryRepository.FindByItemName(keyword);
+        }
+
+        /// <summary>
+        /// 在庫Idで在庫を検索します
+        /// </summary>
+        /// <param name="inventoryId"></param>
+        /// <returns></returns>
+        public Inventory FindById(int inventoryId)
+        {
+            return inventoryRepository.FindById(inventoryId)
+                ?? throw new InvalidOperationException("在庫が見つかりませんでした");
         }
 
         /// <summary>
